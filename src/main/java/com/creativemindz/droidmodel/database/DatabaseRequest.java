@@ -2,8 +2,8 @@ package com.creativemindz.droidmodel.database;
 
 import android.util.Log;
 
-import com.creativemindz.Utils.DroidUtils;
-import com.creativemindz.droidmodels.DroidModel;
+import com.creativemindz.droidmodel.DroidUtils;
+import com.creativemindz.droidmodel.DroidModel;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -227,7 +227,6 @@ public class DatabaseRequest implements Comparable<DatabaseRequest>{
             case Action.BULK_INSERT: break;//TODO
             case Action.BULK_UPDATE: break;//TODO
             case Action.BULK_DELETE: break;//TODO
-            case Action.CLEAR_TABLE:break;//TODO
             case Action.SELECT_ALL: return getSelectAllQuery();
         }
         return getSelectQuery();

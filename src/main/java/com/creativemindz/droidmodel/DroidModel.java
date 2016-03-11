@@ -2,9 +2,9 @@ package com.creativemindz.droidmodel;
 
 import android.util.Log;
 
-import com.creativemindz.Utils.DroidUtils;
-import com.creativemindz.database.DatabaseHandler;
-import com.creativemindz.database.DatabaseRequest;
+import com.creativemindz.droidmodel.DroidUtils;
+import com.creativemindz.droidmodel.database.DatabaseHandler;
+import com.creativemindz.droidmodel.database.DatabaseRequest;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
@@ -184,7 +184,7 @@ public class DroidModel {
         while (i.hasNext()){
             HashMap<String,String> values = i.next();
             Object dm = definedClass.getConstructor().newInstance();
-            Method m = definedClass.getMethod("setModelValues",HashMap.class);
+            Method m = definedClass.getMethod("setModelValues", HashMap.class);
             m.invoke(dm,values);
             returning.add(dm);
         }
@@ -197,9 +197,49 @@ public class DroidModel {
      * @return
      * @throws DroidModelException
      */
-    private static ArrayList<DroidModel> find(DroidModel model) throws DroidModelException{
-        //TODO
-        return null;
+    private static ArrayList<Object> find(DroidModel model) throws DroidModelException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        DatabaseRequest dbRequest = new DatabaseRequest();
+        String modelName = sanitizeCanonicalName(model.getClass().getName());
+        dbRequest.setTableName(modelName);
+        dbRequest.setActionType(DatabaseRequest.Action.SELECT);
+
+        StringBuffer conditionBuffer = new StringBuffer();
+
+        HashMap<String,String> values = model.getValues();
+        Iterator<String> keys = values.keySet().iterator();
+        boolean first = true;
+        while (keys.hasNext()){
+            String key = keys.next();
+            String value = values.get(key);
+            if(DroidUtils.isStringValid(value) && DroidUtils.isStringValid(key)){
+                String condition = key + EQUALS + DroidUtils.enclose(value);
+                if(first){
+                    first = false;
+                }else {
+                    conditionBuffer.append(" AND ");
+                }
+                //TODO: Validate condition before appending
+                conditionBuffer.append(condition);
+            }
+        }
+
+        dbRequest.setConditions(conditionBuffer.toString());
+        ArrayList<HashMap<String,String>> response
+                = DatabaseHandler.getInstance().
+                processRequest(dbRequest.getRW(), dbRequest.getRawQuery());
+
+        ArrayList<Object> returning = new ArrayList<>();
+
+        Iterator<HashMap<String,String>> i = response.iterator();
+        while (i.hasNext()){
+            HashMap<String,String> rvalues = i.next();
+            Object dm = model.getClass().getConstructor().newInstance();
+            Method m = model.getClass().getMethod("setModelValues", HashMap.class);
+            m.invoke(dm,rvalues);
+            returning.add(dm);
+        }
+        return returning;
     }
 
     /**
