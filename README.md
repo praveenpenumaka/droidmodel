@@ -12,7 +12,7 @@ Usage
 - Create a package called models in the repository
 - Create a class called ModelManager extending DroidModelManager
 
-```
+```java
 import android.content.Context;
 
 import com.creativemindz.droidmodel.DroidModelManger;
@@ -36,7 +36,7 @@ Note: Automatic database version increment is not supported yet.
 
 - Create models as required extending DroidModel
 
-```
+```java
 import com.creativemindz.droidmodels.DroidModel;
 
 public class User extends DroidModel {
@@ -62,14 +62,14 @@ Supported Operations
 
 ### Create table
 
-```
+```java
 User u = new User();
 ```
 
 Note: If already created, this won't create table again
 
 ### Add entries
-```
+```java
 User u = new User();
 u.email = "praveenpenumaka@github.io";
 u.name = "Praveen Penumaka";
@@ -77,7 +77,7 @@ u.save();
 ```
 
 ### Retrieve one entry
-```
+```java
 User u = new User();
 u.email = "praveenpenumaka@github.io";
 u.load()
@@ -85,7 +85,7 @@ System.out.println(u.name); // prints - Praveen Penumaka
 ```
 
 ### Update one entry
-```
+```java
 User u = new User();
 u.email = "praveenpenumaka@github.io";
 u.load()
@@ -94,7 +94,7 @@ u.save();
 ```
 
 ### Retrieve all
-```
+```java
 ArrayList<User> users = User.findAll(User.class);
 ```
 
